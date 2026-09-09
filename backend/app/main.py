@@ -10,6 +10,8 @@ from app.api.chat import router as chat_router
 from app.api.conversations import router as conversation_router
 from app.api.documents import router as document_router
 from app.api.knowledge import router as knowledge_router
+from app.api.chatbots import router as chatbot_router
+
 
 from app.config.settings import get_settings
 
@@ -64,6 +66,10 @@ def api_health_check():
 # API ROUTES
 # ============================================================================
 
+app.include_router(
+    chatbot_router,
+    prefix=settings.api_prefix,
+)
 
 app.include_router(
     ai_provider_router,

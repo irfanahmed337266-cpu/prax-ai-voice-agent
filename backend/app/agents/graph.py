@@ -23,7 +23,9 @@ from app.agents.nodes.update_state import (
 from app.agents.prompts.prompt_builder import (
     prompt_builder_node,
 )
-from app.agents.router import determine_current_stage
+from app.agents.router import (
+    determine_current_stage,
+)
 from app.agents.state import AgentState
 
 

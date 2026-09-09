@@ -16,7 +16,7 @@ class ChatbotConfigLoader:
             .table("chatbots")
             .select("*")
             .eq("id", chatbot_id)
-            .single()
+            .maybe_single()
             .execute()
         )
 

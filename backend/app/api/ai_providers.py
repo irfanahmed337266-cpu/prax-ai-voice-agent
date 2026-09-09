@@ -44,6 +44,35 @@ def create_ai_provider(
 
 
 @router.get(
+    "/chatbot/{chatbot_id}",
+    response_model=list[AIProviderResponse],
+)
+def list_chatbot_ai_providers(chatbot_id: str):
+    try:
+        service = AIProviderService()
+
+        providers = service.list_providers_for_chatbot(
+            chatbot_id=chatbot_id
+        )
+
+        return [
+            service._safe_response(provider)
+            for provider in providers
+        ]
+
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail=str(exc),
+        ) from exc
+
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=str(exc),
+        ) from exc
+
+@router.get(
     "/{provider_id}",
     response_model=AIProviderResponse,
 )
