@@ -215,7 +215,7 @@ class BrandingUpdateRequest(BaseModel):
 class BrandingResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: str
+    id: str | None = None
     chatbot_id: str
 
     primary_color: str | None = None

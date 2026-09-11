@@ -8,6 +8,10 @@ import ConfigureChatbot from "./pages/ConfigureChatbot";
 import AIProvider from "./pages/AIProvider";
 import FlowEditor from "./pages/FlowEditor";
 import ChatPreview from "./pages/ChatPreview";
+import KnowledgeBase from "./pages/KnowledgeBase";
+import HumanHandoff from "./pages/HumanHandoff";
+import Branding from "./pages/Branding";
+import Deploy from "./pages/Deploy";
 
 function Dashboard() {
   const stats = [
@@ -531,18 +535,16 @@ function AppLayout() {
               element={<EditChatbot />}
             />
 
-            <Route 
-              path="/chatbots/:chatbotId/configure" 
-              element={<ConfigureChatbot />} 
+            <Route
+              path="/chatbots/:chatbotId"
+              element={<ConfigureChatbot />}
             />
 
             {/* Main Modules */}
 
             <Route
               path="/knowledge"
-              element={
-                <Placeholder title="Knowledge Base" />
-              }
+                element={<KnowledgeBase />}
             />
 
             <Route
@@ -557,16 +559,12 @@ function AppLayout() {
 
             <Route
               path="/handoff"
-              element={
-                <Placeholder title="Human Handoff" />
-              }
+              element={<HumanHandoff />}
             />
 
             <Route
               path="/branding"
-              element={
-                <Placeholder title="Branding" />
-              }
+              element={<Branding />}
             />
 
             <Route
@@ -576,9 +574,7 @@ function AppLayout() {
 
             <Route
               path="/deploy"
-              element={
-                <Placeholder title="Deploy" />
-              }
+              element={<Deploy />}
             />
 
             {/* Default */}

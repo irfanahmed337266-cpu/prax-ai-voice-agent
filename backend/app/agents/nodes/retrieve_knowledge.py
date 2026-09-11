@@ -28,9 +28,7 @@ class KnowledgeRetrievalNode:
     DEFAULT_MATCH_COUNT = 5
 
     def __init__(self) -> None:
-        self.retrieval_service = (
-            get_retrieval_service()
-        )
+        self.retrieval_service = get_retrieval_service()
 
     def _get_active_knowledge_base(
         self,
@@ -100,6 +98,11 @@ class KnowledgeRetrievalNode:
         # -----------------------------------------------------
 
         if not knowledge_base:
+            print(
+                "[RAG] No active knowledge base found "
+                f"for chatbot {chatbot_id}"
+            )
+
             return {
                 "knowledge_context": "",
                 "knowledge_base_id": "",
@@ -108,6 +111,19 @@ class KnowledgeRetrievalNode:
             }
 
         knowledge_base_id = knowledge_base["id"]
+
+        print(
+            "\n========== RAG RETRIEVAL DEBUG =========="
+        )
+        print(
+            f"chatbot_id: {chatbot_id}"
+        )
+        print(
+            f"knowledge_base_id: {knowledge_base_id}"
+        )
+        print(
+            f"user_message: {user_message}"
+        )
 
         # -----------------------------------------------------
         # Semantic retrieval
@@ -127,17 +143,41 @@ class KnowledgeRetrievalNode:
             )
         )
 
+        knowledge_context = (
+            result.get("context") or ""
+        )
+
+        retrieved_results = (
+            result.get("results") or []
+        )
+
+        retrieval_result_count = (
+            result.get("result_count", 0)
+        )
+
+        print(
+            f"retrieval_result_count: "
+            f"{retrieval_result_count}"
+        )
+        print(
+            f"knowledge_context_length: "
+            f"{len(knowledge_context)}"
+        )
+        print(
+            "retrieved_results:"
+        )
+        print(
+            retrieved_results
+        )
+        print(
+            "========== END RAG RETRIEVAL DEBUG ==========\n"
+        )
+
         return {
-            "knowledge_context": (
-                result.get("context") or ""
-            ),
+            "knowledge_context": knowledge_context,
             "knowledge_base_id": knowledge_base_id,
-            "retrieved_results": (
-                result.get("results") or []
-            ),
-            "retrieval_result_count": (
-                result.get("result_count", 0)
-            ),
+            "retrieved_results": retrieved_results,
+            "retrieval_result_count": retrieval_result_count,
         }
 
 

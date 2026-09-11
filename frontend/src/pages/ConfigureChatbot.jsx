@@ -181,7 +181,7 @@ function ConfigureChatbot() {
         <button
           type="button"
           className="configure-card"
-          onClick={() => navigate("/knowledge")}
+          onClick={() => navigate(`/knowledge?chatbotId=${chatbotId}`)}
         >
           <div className="configure-card-icon">📚</div>
 
