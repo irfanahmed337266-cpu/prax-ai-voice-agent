@@ -6,6 +6,7 @@ from app.services.ai_provider_service import AIProviderService
 async def generate_response_node(
     state: dict[str, Any],
 ) -> dict[str, Any]:
+
     chatbot = state.get("chatbot") or {}
 
     chatbot_id = chatbot.get("id")

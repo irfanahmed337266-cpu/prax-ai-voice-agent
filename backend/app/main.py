@@ -11,6 +11,7 @@ from app.api.conversations import router as conversation_router
 from app.api.documents import router as document_router
 from app.api.knowledge import router as knowledge_router
 from app.api.chatbots import router as chatbot_router
+from app.api.voice import router as voice_router
 
 
 from app.config.settings import get_settings
@@ -114,4 +115,8 @@ app.include_router(
 app.include_router(
     deployments_router,
     prefix=settings.api_prefix,
+)
+
+app.include_router(
+    voice_router,
 )

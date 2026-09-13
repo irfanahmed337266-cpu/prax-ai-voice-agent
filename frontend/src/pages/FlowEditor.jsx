@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 
+const ACTIVE_CHATBOT_ID =
+  "74b2abcd-021d-4c97-acf7-5dfed0f21663";
+
 const EMPTY_STAGE = {
   name: "",
   description: "",
@@ -18,58 +21,54 @@ const EMPTY_TRANSITION = {
 };
 
 const C = {
-  bg: "#f6f8fb",
-  white: "#ffffff",
-  border: "#e2e8f0",
-  borderDark: "#cbd5e1",
-  text: "#0f172a",
-  text2: "#334155",
-  muted: "#64748b",
-  subtle: "#94a3b8",
+  bg: "#0b1020",
+  panel: "#11182b",
+  panel2: "#151e34",
+  panel3: "#0d1426",
+  border: "#26324d",
+  borderSoft: "#1d2942",
+  text: "#f8fafc",
+  text2: "#cbd5e1",
+  muted: "#8492ad",
+  subtle: "#64748b",
 
-  primary: "#111827",
+  violet: "#8b5cf6",
+  violet2: "#7c3aed",
+  violetBg: "rgba(139,92,246,0.13)",
 
-  blue: "#2563eb",
-  blueDark: "#1d4ed8",
-  blueBg: "#eff6ff",
-  blueSoft: "#dbeafe",
+  cyan: "#22d3ee",
+  cyanBg: "rgba(34,211,238,0.11)",
 
-  green: "#15803d",
-  greenDark: "#166534",
-  greenBg: "#f0fdf4",
-  greenSoft: "#dcfce7",
+  green: "#22c55e",
+  greenBg: "rgba(34,197,94,0.12)",
 
-  amber: "#b45309",
-  amberDark: "#92400e",
-  amberBg: "#fffbeb",
-  amberSoft: "#fef3c7",
+  amber: "#f59e0b",
+  amberBg: "rgba(245,158,11,0.12)",
 
-  purple: "#6d28d9",
-  purpleBg: "#f5f3ff",
-  purpleSoft: "#ede9fe",
-
-  red: "#b91c1c",
-  redBg: "#fef2f2",
+  red: "#f87171",
+  redBg: "rgba(248,113,113,0.10)",
 };
 
 const styles = {
   page: {
     minHeight: "100%",
     padding: "28px",
-    background: C.bg,
     boxSizing: "border-box",
+    color: C.text,
+    background:
+      "radial-gradient(circle at 15% 0%, rgba(124,58,237,0.12), transparent 28%), radial-gradient(circle at 90% 15%, rgba(34,211,238,0.06), transparent 24%), #0b1020",
   },
 
   shell: {
-    maxWidth: "1280px",
+    maxWidth: "1380px",
     margin: "0 auto",
   },
 
   eyebrow: {
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: 800,
-    letterSpacing: "0.14em",
-    color: C.muted,
+    letterSpacing: "0.18em",
+    color: C.violet,
     marginBottom: "8px",
   },
 
@@ -84,126 +83,170 @@ const styles = {
   title: {
     margin: 0,
     fontSize: "30px",
-    fontWeight: 750,
+    fontWeight: 800,
+    letterSpacing: "-0.025em",
     color: C.text,
   },
 
   subtitle: {
     margin: "7px 0 0",
-    fontSize: "14px",
+    fontSize: "13px",
     lineHeight: 1.6,
     color: C.muted,
   },
 
+  headerAgent: {
+    marginTop: "13px",
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "7px 11px",
+    borderRadius: "8px",
+    background: C.panel2,
+    border: `1px solid ${C.border}`,
+    fontSize: "11px",
+    color: C.text2,
+  },
+
+  liveDot: {
+    width: "7px",
+    height: "7px",
+    borderRadius: "50%",
+    background: C.green,
+    boxShadow: "0 0 10px rgba(34,197,94,0.7)",
+  },
+
   headerActions: {
     display: "flex",
-    gap: "10px",
+    gap: "9px",
   },
 
   btn: {
-    borderRadius: "8px",
+    borderRadius: "9px",
     padding: "10px 14px",
-    fontSize: "13px",
-    fontWeight: 650,
+    fontSize: "12px",
+    fontWeight: 700,
     cursor: "pointer",
+    transition: "all .15s ease",
   },
 
   btnPrimary: {
-    background: C.primary,
-    color: C.white,
-    border: `1px solid ${C.primary}`,
+    background:
+      "linear-gradient(135deg, #8b5cf6, #6d28d9)",
+    color: "#fff",
+    border: "1px solid rgba(167,139,250,.45)",
+    boxShadow: "0 8px 22px rgba(124,58,237,.20)",
   },
 
   btnSecondary: {
-    background: C.white,
+    background: C.panel2,
     color: C.text2,
-    border: `1px solid ${C.borderDark}`,
-  },
-
-  btnDanger: {
-    background: C.white,
-    color: C.red,
-    border: "1px solid #fecaca",
+    border: `1px solid ${C.border}`,
   },
 
   alerts: {
     display: "grid",
-    gap: "10px",
-    marginBottom: "20px",
+    gap: "9px",
+    marginBottom: "18px",
   },
 
   alert: {
-    padding: "12px 14px",
+    padding: "11px 14px",
     borderRadius: "9px",
-    fontSize: "13px",
+    fontSize: "12px",
+    background: C.panel2,
   },
 
   summaryGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: "14px",
-    marginBottom: "22px",
+    gridTemplateColumns:
+      "repeat(4,minmax(0,1fr))",
+    gap: "12px",
+    marginBottom: "18px",
   },
 
   summary: {
-    background: C.white,
-    border: `1px solid ${C.border}`,
+    position: "relative",
+    overflow: "hidden",
+    padding: "16px",
     borderRadius: "12px",
-    padding: "17px",
-    boxShadow: "0 2px 8px rgba(15,23,42,0.03)",
+    background:
+      "linear-gradient(145deg, #121b30, #0e1628)",
+    border: `1px solid ${C.border}`,
+    boxShadow: "0 10px 30px rgba(0,0,0,.16)",
+  },
+
+  summaryAccent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "3px",
+    height: "100%",
+    background:
+      "linear-gradient(180deg,#8b5cf6,#22d3ee)",
   },
 
   summaryLabel: {
-    fontSize: "10px",
+    marginLeft: "5px",
+    fontSize: "9px",
     fontWeight: 800,
-    letterSpacing: "0.08em",
+    letterSpacing: "0.11em",
     color: C.subtle,
-    marginBottom: "8px",
+    marginBottom: "9px",
   },
 
   summaryValue: {
-    fontSize: "18px",
-    fontWeight: 700,
+    marginLeft: "5px",
+    fontSize: "19px",
+    fontWeight: 800,
     color: C.text,
   },
 
+  summaryHint: {
+    marginLeft: "5px",
+    marginTop: "5px",
+    fontSize: "10px",
+    color: C.muted,
+  },
+
   panel: {
-    background: C.white,
+    background:
+      "linear-gradient(145deg, rgba(18,27,48,.98), rgba(13,20,38,.98))",
     border: `1px solid ${C.border}`,
     borderRadius: "14px",
     overflow: "hidden",
-    marginBottom: "20px",
-    boxShadow: "0 2px 10px rgba(15,23,42,0.03)",
+    marginBottom: "18px",
+    boxShadow: "0 16px 45px rgba(0,0,0,.18)",
   },
 
   panelHeader: {
-    padding: "20px 22px",
-    borderBottom: `1px solid ${C.border}`,
+    padding: "18px 20px",
+    borderBottom: `1px solid ${C.borderSoft}`,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    gap: "16px",
+    gap: "15px",
   },
 
   panelTitle: {
     margin: 0,
-    fontSize: "17px",
-    fontWeight: 700,
+    fontSize: "15px",
+    fontWeight: 750,
     color: C.text,
   },
 
   panelText: {
     margin: "5px 0 0",
-    fontSize: "12px",
+    fontSize: "11px",
     color: C.muted,
   },
 
   canvas: {
-    padding: "40px 28px 46px",
-    backgroundColor: "#fbfcfe",
+    padding: "42px 28px 48px",
+    backgroundColor: "#0b1222",
     backgroundImage:
-      "radial-gradient(#dbe3ed 1px, transparent 1px)",
-    backgroundSize: "20px 20px",
+      "radial-gradient(rgba(148,163,184,.13) 1px, transparent 1px)",
+    backgroundSize: "22px 22px",
   },
 
   flow: {
@@ -213,45 +256,35 @@ const styles = {
     width: "100%",
   },
 
-  /*
-   * =========================================================
-   * VISUAL FLOW NODES
-   * =========================================================
-   */
-
   node: {
     width: "100%",
-    maxWidth: "410px",
-    borderRadius: "16px",
+    maxWidth: "430px",
+    borderRadius: "14px",
     padding: "17px",
     boxSizing: "border-box",
-    boxShadow: "0 10px 28px rgba(15,23,42,0.08)",
-    transition:
-      "transform 0.15s ease, box-shadow 0.15s ease",
+    background:
+      "linear-gradient(145deg,#18223a,#111a2e)",
+    border: `1px solid ${C.border}`,
+    boxShadow:
+      "0 15px 35px rgba(0,0,0,.25)",
   },
 
   nodeStart: {
-    background:
-      "linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%)",
-    border: `2px solid ${C.blue}`,
+    border:
+      "1px solid rgba(139,92,246,.72)",
     boxShadow:
-      "0 12px 30px rgba(37,99,235,0.16)",
-  },
-
-  nodeNormal: {
+      "0 15px 40px rgba(124,58,237,.18)",
     background:
-      "linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)",
-    border: `2px solid ${C.borderDark}`,
-    boxShadow:
-      "0 10px 24px rgba(15,23,42,0.07)",
+      "linear-gradient(145deg,rgba(91,55,170,.23),#121a30)",
   },
 
   nodeTerminal: {
-    background:
-      "linear-gradient(180deg, #fffbeb 0%, #fef3c7 100%)",
-    border: `2px solid #f59e0b`,
+    border:
+      "1px solid rgba(245,158,11,.65)",
     boxShadow:
-      "0 12px 30px rgba(245,158,11,0.16)",
+      "0 15px 35px rgba(245,158,11,.10)",
+    background:
+      "linear-gradient(145deg,rgba(120,74,7,.18),#151b2c)",
   },
 
   nodeTop: {
@@ -263,7 +296,7 @@ const styles = {
 
   nodeLeft: {
     display: "flex",
-    gap: "10px",
+    gap: "11px",
     alignItems: "center",
     minWidth: 0,
   },
@@ -275,33 +308,40 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: 800,
     flexShrink: 0,
-    boxShadow:
-      "inset 0 0 0 1px rgba(255,255,255,0.28)",
   },
 
   numberStart: {
-    background: C.blue,
-    color: C.white,
+    background:
+      "linear-gradient(135deg,#8b5cf6,#6d28d9)",
+    color: "#fff",
   },
 
   numberNormal: {
-    background: "#e2e8f0",
+    background: "#202b43",
     color: C.text2,
   },
 
   numberTerminal: {
-    background: "#f59e0b",
-    color: C.white,
+    background:
+      "linear-gradient(135deg,#f59e0b,#d97706)",
+    color: "#fff",
   },
 
   nodeName: {
     margin: 0,
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: 750,
     color: C.text,
+  },
+
+  nodeType: {
+    marginTop: "3px",
+    fontSize: "9px",
+    color: C.muted,
+    letterSpacing: ".04em",
   },
 
   badges: {
@@ -314,27 +354,27 @@ const styles = {
   badge: {
     padding: "4px 7px",
     borderRadius: "999px",
-    fontSize: "9px",
+    fontSize: "8px",
     fontWeight: 800,
-    border: "1px solid transparent",
+    letterSpacing: ".06em",
   },
 
   startBadge: {
-    background: C.blueSoft,
-    color: C.blueDark,
-    borderColor: "#93c5fd",
+    background: C.violetBg,
+    color: "#c4b5fd",
+    border: "1px solid rgba(139,92,246,.35)",
   },
 
   endBadge: {
-    background: C.amberSoft,
-    color: C.amberDark,
-    borderColor: "#fcd34d",
+    background: C.amberBg,
+    color: "#fbbf24",
+    border: "1px solid rgba(245,158,11,.35)",
   },
 
   description: {
     margin: "14px 0",
-    fontSize: "12px",
-    lineHeight: 1.6,
+    fontSize: "11px",
+    lineHeight: 1.65,
     color: C.text2,
   },
 
@@ -348,39 +388,40 @@ const styles = {
   metaBox: {
     padding: "9px 10px",
     borderRadius: "8px",
-    background: "rgba(255,255,255,0.72)",
-    border: `1px solid rgba(148,163,184,0.28)`,
+    background: "rgba(8,14,29,.55)",
+    border: `1px solid ${C.borderSoft}`,
   },
 
   metaLabel: {
     display: "block",
-    fontSize: "9px",
+    fontSize: "8px",
     textTransform: "uppercase",
-    letterSpacing: "0.06em",
+    letterSpacing: ".08em",
     fontWeight: 800,
     color: C.subtle,
-    marginBottom: "3px",
+    marginBottom: "4px",
   },
 
   metaValue: {
-    fontSize: "11px",
-    fontWeight: 650,
+    fontSize: "10px",
+    fontWeight: 700,
     color: C.text2,
   },
 
   nodeActions: {
     display: "flex",
-    gap: "8px",
+    gap: "7px",
   },
 
   nodeBtn: {
     flex: 1,
     padding: "8px 10px",
     borderRadius: "7px",
-    background: "rgba(255,255,255,0.85)",
-    fontSize: "11px",
-    fontWeight: 650,
+    background: "rgba(17,24,39,.7)",
+    fontSize: "10px",
+    fontWeight: 700,
     cursor: "pointer",
+    color: C.text2,
   },
 
   connector: {
@@ -392,17 +433,17 @@ const styles = {
   },
 
   line: {
-    width: "2px",
+    width: "1px",
     height: "28px",
     background:
-      "linear-gradient(180deg, #cbd5e1, #94a3b8)",
+      "linear-gradient(180deg,#475569,#27344e)",
   },
 
   arrow: {
-    color: C.muted,
-    fontSize: "18px",
+    color: C.violet,
+    fontSize: "15px",
     lineHeight: 1,
-    fontWeight: 700,
+    fontWeight: 800,
   },
 
   branchGrid: {
@@ -410,10 +451,9 @@ const styles = {
     maxWidth: "980px",
     display: "grid",
     gridTemplateColumns:
-      "repeat(2, minmax(0, 1fr))",
+      "repeat(2,minmax(0,1fr))",
     gap: "28px",
     alignItems: "start",
-    position: "relative",
   },
 
   branchColumn: {
@@ -433,22 +473,20 @@ const styles = {
   conditionLabel: {
     padding: "6px 10px",
     borderRadius: "999px",
-    background:
-      "linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%)",
-    color: C.purple,
-    border: "1px solid #c4b5fd",
-    fontSize: "10px",
+    background: C.cyanBg,
+    color: C.cyan,
+    border:
+      "1px solid rgba(34,211,238,.25)",
+    fontSize: "9px",
     fontWeight: 800,
     marginBottom: "8px",
-    boxShadow:
-      "0 3px 8px rgba(109,40,217,0.08)",
   },
 
   branchArrow: {
-    color: C.muted,
-    fontSize: "17px",
+    color: C.cyan,
+    fontSize: "15px",
     marginBottom: "8px",
-    fontWeight: 700,
+    fontWeight: 800,
   },
 
   targetNode: {
@@ -458,55 +496,55 @@ const styles = {
 
   targetInfo: {
     marginTop: "8px",
-    fontSize: "10px",
+    fontSize: "9px",
     color: C.subtle,
     textAlign: "center",
-    fontWeight: 650,
+    fontWeight: 700,
   },
 
   terminalBanner: {
     marginTop: "24px",
-    padding: "11px 15px",
+    padding: "10px 14px",
     borderRadius: "9px",
     background: C.amberBg,
-    color: C.amber,
-    border: "1px solid #fde68a",
-    fontSize: "11px",
-    fontWeight: 650,
+    color: "#fbbf24",
+    border:
+      "1px solid rgba(245,158,11,.25)",
+    fontSize: "10px",
+    fontWeight: 700,
     textAlign: "center",
   },
 
   transitionsHeader: {
     display: "grid",
     gridTemplateColumns:
-      "minmax(160px,1fr) 35px minmax(160px,1fr) 120px 65px 130px",
-    gap: "12px",
-    padding: "11px 18px",
-    background: "#f8fafc",
-    borderBottom: `1px solid ${C.border}`,
-    fontSize: "9px",
+      "minmax(150px,1fr) 30px minmax(150px,1fr) 150px 65px 130px",
+    gap: "10px",
+    padding: "10px 18px",
+    background: "rgba(9,15,29,.65)",
+    borderBottom: `1px solid ${C.borderSoft}`,
+    fontSize: "8px",
     fontWeight: 800,
-    letterSpacing: "0.06em",
+    letterSpacing: ".08em",
     color: C.subtle,
-    textTransform: "uppercase",
   },
 
   transitionRow: {
     display: "grid",
     gridTemplateColumns:
-      "minmax(160px,1fr) 35px minmax(160px,1fr) 120px 65px 130px",
-    gap: "12px",
+      "minmax(150px,1fr) 30px minmax(150px,1fr) 150px 65px 130px",
+    gap: "10px",
     alignItems: "center",
-    padding: "14px 18px",
-    borderBottom: `1px solid ${C.border}`,
+    padding: "13px 18px",
+    borderBottom: `1px solid ${C.borderSoft}`,
   },
 
   stagePill: {
     padding: "8px 10px",
     borderRadius: "8px",
-    background: "#f8fafc",
+    background: "#111a2d",
     border: `1px solid ${C.border}`,
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: 650,
     color: C.text2,
     overflow: "hidden",
@@ -516,34 +554,35 @@ const styles = {
 
   transitionArrow: {
     textAlign: "center",
-    fontSize: "16px",
-    color: C.subtle,
+    fontSize: "15px",
+    color: C.violet,
+    fontWeight: 800,
   },
 
   condition: {
     display: "inline-flex",
     width: "fit-content",
     maxWidth: "100%",
-    padding: "5px 9px",
+    padding: "5px 8px",
     borderRadius: "999px",
-    background:
-      "linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%)",
-    color: C.purple,
-    border: "1px solid #ddd6fe",
-    fontSize: "9px",
+    background: C.violetBg,
+    color: "#c4b5fd",
+    border:
+      "1px solid rgba(139,92,246,.25)",
+    fontSize: "8px",
     fontWeight: 800,
   },
 
   priority: {
     display: "inline-flex",
     width: "32px",
-    height: "26px",
+    height: "25px",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: "7px",
-    background: "#f1f5f9",
+    background: "#1b263d",
     color: C.text2,
-    fontSize: "10px",
+    fontSize: "9px",
     fontWeight: 800,
   },
 
@@ -555,10 +594,10 @@ const styles = {
   rowBtn: {
     borderRadius: "6px",
     padding: "6px 8px",
-    fontSize: "10px",
-    fontWeight: 650,
+    fontSize: "9px",
+    fontWeight: 700,
     cursor: "pointer",
-    background: C.white,
+    background: "#121b30",
   },
 
   empty: {
@@ -569,27 +608,30 @@ const styles = {
   emptyIcon: {
     width: "52px",
     height: "52px",
-    borderRadius: "13px",
-    background: "#f1f5f9",
+    borderRadius: "14px",
+    background:
+      "linear-gradient(135deg,rgba(139,92,246,.18),rgba(34,211,238,.08))",
+    border:
+      "1px solid rgba(139,92,246,.25)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     margin: "0 auto 15px",
-    fontSize: "23px",
-    color: C.text2,
+    fontSize: "21px",
+    color: C.violet,
   },
 
   emptyTitle: {
     margin: 0,
-    fontSize: "18px",
-    fontWeight: 700,
+    fontSize: "17px",
+    fontWeight: 750,
     color: C.text,
   },
 
   emptyText: {
     maxWidth: "440px",
     margin: "8px auto 18px",
-    fontSize: "13px",
+    fontSize: "12px",
     lineHeight: 1.6,
     color: C.muted,
   },
@@ -598,7 +640,8 @@ const styles = {
     position: "fixed",
     inset: 0,
     zIndex: 9999,
-    background: "rgba(15,23,42,0.5)",
+    background: "rgba(2,6,23,.78)",
+    backdropFilter: "blur(7px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -610,16 +653,17 @@ const styles = {
     maxWidth: "570px",
     maxHeight: "90vh",
     overflowY: "auto",
-    background: C.white,
+    background:
+      "linear-gradient(145deg,#151f35,#0e1628)",
     borderRadius: "15px",
     border: `1px solid ${C.border}`,
     boxShadow:
-      "0 25px 70px rgba(15,23,42,0.25)",
+      "0 30px 90px rgba(0,0,0,.55)",
   },
 
   modalHeader: {
-    padding: "20px 22px",
-    borderBottom: `1px solid ${C.border}`,
+    padding: "19px 21px",
+    borderBottom: `1px solid ${C.borderSoft}`,
     display: "flex",
     justifyContent: "space-between",
     gap: "16px",
@@ -627,37 +671,37 @@ const styles = {
 
   modalTitle: {
     margin: 0,
-    fontSize: "18px",
-    fontWeight: 700,
+    fontSize: "17px",
+    fontWeight: 750,
     color: C.text,
   },
 
   modalText: {
     margin: "5px 0 0",
-    fontSize: "12px",
+    fontSize: "11px",
     color: C.muted,
   },
 
   closeBtn: {
-    width: "32px",
-    height: "32px",
+    width: "31px",
+    height: "31px",
     borderRadius: "8px",
     border: `1px solid ${C.border}`,
-    background: C.white,
+    background: "#111a2d",
     cursor: "pointer",
-    fontSize: "20px",
+    fontSize: "19px",
     color: C.muted,
   },
 
   modalBody: {
-    padding: "22px",
+    padding: "21px",
   },
 
   formGrid: {
     display: "grid",
     gridTemplateColumns:
       "repeat(2,minmax(0,1fr))",
-    gap: "16px",
+    gap: "15px",
   },
 
   formFull: {
@@ -671,42 +715,42 @@ const styles = {
   },
 
   formLabel: {
-    fontSize: "12px",
-    fontWeight: 650,
+    fontSize: "10px",
+    fontWeight: 700,
     color: C.text2,
   },
 
   formInput: {
     width: "100%",
     boxSizing: "border-box",
-    padding: "11px 12px",
+    padding: "10px 11px",
     borderRadius: "8px",
-    border: `1px solid ${C.borderDark}`,
-    background: C.white,
+    border: `1px solid ${C.border}`,
+    background: "#0c1425",
     color: C.text,
-    fontSize: "13px",
+    fontSize: "12px",
     outline: "none",
   },
 
   formHint: {
-    fontSize: "10px",
+    fontSize: "9px",
     color: C.subtle,
     lineHeight: 1.45,
   },
 
   checks: {
     display: "grid",
-    gap: "9px",
+    gap: "8px",
   },
 
   check: {
     display: "flex",
     gap: "9px",
     alignItems: "flex-start",
-    padding: "10px",
+    padding: "9px",
     borderRadius: "8px",
-    background: "#f8fafc",
-    border: `1px solid ${C.border}`,
+    background: "#0e1729",
+    border: `1px solid ${C.borderSoft}`,
   },
 
   checkText: {
@@ -716,30 +760,69 @@ const styles = {
   },
 
   checkTitle: {
-    fontSize: "11px",
+    fontSize: "10px",
     fontWeight: 700,
     color: C.text2,
   },
 
   checkHint: {
-    fontSize: "10px",
+    fontSize: "9px",
     color: C.muted,
   },
 
   modalActions: {
     display: "flex",
     justifyContent: "flex-end",
-    gap: "10px",
-    marginTop: "20px",
-    paddingTop: "18px",
-    borderTop: `1px solid ${C.border}`,
+    gap: "9px",
+    marginTop: "19px",
+    paddingTop: "17px",
+    borderTop: `1px solid ${C.borderSoft}`,
+  },
+
+  runtimeBar: {
+    marginTop: "14px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: "12px 14px",
+    borderRadius: "9px",
+    background:
+      "linear-gradient(90deg,rgba(34,197,94,.08),rgba(34,211,238,.04))",
+    border:
+      "1px solid rgba(34,197,94,.16)",
+  },
+
+  runtimeTitle: {
+    fontSize: "10px",
+    fontWeight: 800,
+    color: C.text2,
+  },
+
+  runtimeText: {
+    marginTop: "3px",
+    fontSize: "9px",
+    color: C.muted,
+  },
+
+  runtimeStatus: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "5px 8px",
+    borderRadius: "999px",
+    background: C.greenBg,
+    color: "#4ade80",
+    fontSize: "8px",
+    fontWeight: 800,
   },
 };
 
 function FlowEditor() {
   const [searchParams] = useSearchParams();
+
   const chatbotId =
-    searchParams.get("chatbotId");
+    searchParams.get("chatbotId") ||
+    ACTIVE_CHATBOT_ID;
 
   const [chatbot, setChatbot] =
     useState(null);
@@ -756,8 +839,11 @@ function FlowEditor() {
   const [saving, setSaving] =
     useState(false);
 
-  const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [error, setError] =
+    useState("");
+
+  const [message, setMessage] =
+    useState("");
 
   const [showStageModal, setShowStageModal] =
     useState(false);
@@ -768,20 +854,14 @@ function FlowEditor() {
   const [stageForm, setStageForm] =
     useState(EMPTY_STAGE);
 
-  const [
-    showTransitionModal,
-    setShowTransitionModal,
-  ] = useState(false);
+  const [showTransitionModal, setShowTransitionModal] =
+    useState(false);
 
-  const [
-    editingTransition,
-    setEditingTransition,
-  ] = useState(null);
+  const [editingTransition, setEditingTransition] =
+    useState(null);
 
-  const [
-    transitionForm,
-    setTransitionForm,
-  ] = useState(EMPTY_TRANSITION);
+  const [transitionForm, setTransitionForm] =
+    useState(EMPTY_TRANSITION);
 
   const sortedStages = useMemo(
     () =>
@@ -823,7 +903,9 @@ function FlowEditor() {
 
   async function loadData() {
     if (!chatbotId) {
-      setError("No chatbot selected.");
+      setError(
+        "No voice agent selected."
+      );
       setLoading(false);
       return;
     }
@@ -848,7 +930,9 @@ function FlowEditor() {
         ),
       ]);
 
-      setChatbot(chatbotResponse.data);
+      setChatbot(
+        chatbotResponse.data
+      );
 
       const loadedStages =
         stagesResponse.data || [];
@@ -871,14 +955,14 @@ function FlowEditor() {
       );
     } catch (err) {
       console.error(
-        "Failed to load flow:",
+        "Failed to load voice flow:",
         err
       );
 
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Failed to load Flow Builder data."
+          "Failed to load Conversation Flow."
       );
     } finally {
       setLoading(false);
@@ -912,9 +996,12 @@ function FlowEditor() {
         stage.description || "",
       stage_order:
         stage.stage_order ?? 0,
-      is_start: Boolean(stage.is_start),
-      is_terminal:
-        Boolean(stage.is_terminal),
+      is_start: Boolean(
+        stage.is_start
+      ),
+      is_terminal: Boolean(
+        stage.is_terminal
+      ),
     });
 
     setError("");
@@ -974,10 +1061,9 @@ function FlowEditor() {
         is_start: Boolean(
           stageForm.is_start
         ),
-        is_terminal:
-          Boolean(
-            stageForm.is_terminal
-          ),
+        is_terminal: Boolean(
+          stageForm.is_terminal
+        ),
       };
 
       if (editingStage) {
@@ -987,7 +1073,7 @@ function FlowEditor() {
         );
 
         setMessage(
-          "Stage updated successfully."
+          "Voice stage updated successfully."
         );
       } else {
         await api.post(
@@ -996,7 +1082,7 @@ function FlowEditor() {
         );
 
         setMessage(
-          "Stage created successfully."
+          "Voice stage created successfully."
         );
       }
 
@@ -1011,7 +1097,7 @@ function FlowEditor() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Failed to save stage."
+          "Failed to save voice stage."
       );
     } finally {
       setSaving(false);
@@ -1021,7 +1107,7 @@ function FlowEditor() {
   async function deleteStage(stage) {
     if (
       !window.confirm(
-        `Delete the "${stage.name}" stage?`
+        `Delete the "${stage.name}" voice stage?`
       )
     ) {
       return;
@@ -1036,7 +1122,7 @@ function FlowEditor() {
       );
 
       setMessage(
-        `Stage "${stage.name}" deleted successfully.`
+        `Voice stage "${stage.name}" deleted successfully.`
       );
 
       await loadData();
@@ -1049,7 +1135,7 @@ function FlowEditor() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Failed to delete stage."
+          "Failed to delete voice stage."
       );
     }
   }
@@ -1134,7 +1220,7 @@ function FlowEditor() {
       !transitionForm.to_stage_id
     ) {
       setError(
-        "Please select both stages."
+        "Please select both voice stages."
       );
       return;
     }
@@ -1207,7 +1293,7 @@ function FlowEditor() {
         );
 
         setMessage(
-          "Transition updated successfully."
+          "Voice transition updated successfully."
         );
       } else {
         await api.post(
@@ -1224,7 +1310,7 @@ function FlowEditor() {
         );
 
         setMessage(
-          "Transition created successfully."
+          "Voice transition created successfully."
         );
       }
 
@@ -1239,7 +1325,7 @@ function FlowEditor() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Failed to save transition."
+          "Failed to save voice transition."
       );
     } finally {
       setSaving(false);
@@ -1251,7 +1337,7 @@ function FlowEditor() {
   ) {
     if (
       !window.confirm(
-        "Delete this transition?"
+        "Delete this voice transition?"
       )
     ) {
       return;
@@ -1266,7 +1352,7 @@ function FlowEditor() {
       );
 
       setMessage(
-        "Transition deleted successfully."
+        "Voice transition deleted successfully."
       );
 
       await loadData();
@@ -1279,7 +1365,7 @@ function FlowEditor() {
       setError(
         err.response?.data?.detail ||
           err.message ||
-          "Failed to delete transition."
+          "Failed to delete voice transition."
       );
     }
   }
@@ -1293,35 +1379,23 @@ function FlowEditor() {
     );
   }
 
-  if (!chatbotId) {
-    return (
-      <div style={styles.page}>
-        <div style={styles.shell}>
-          <div style={styles.empty}>
-            <div style={styles.emptyIcon}>
-              ⚠
-            </div>
-
-            <h3 style={styles.emptyTitle}>
-              No chatbot selected
-            </h3>
-
-            <p style={styles.emptyText}>
-              Open Flow Builder from a configured
-              chatbot.
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   if (loading) {
     return (
       <div style={styles.page}>
         <div style={styles.shell}>
           <div style={styles.empty}>
-            Loading Flow Builder...
+            <div style={styles.emptyIcon}>
+              ◌
+            </div>
+
+            <h3 style={styles.emptyTitle}>
+              Loading Voice Flow
+            </h3>
+
+            <p style={styles.emptyText}>
+              Connecting to the PRAX voice
+              conversation runtime...
+            </p>
           </div>
         </div>
       </div>
@@ -1361,7 +1435,7 @@ function FlowEditor() {
     sortedStages.filter(
       (stage) =>
         stage.id !==
-        startStage?.id &&
+          startStage?.id &&
         !uniqueTargets.some(
           (target) =>
             target.id === stage.id
@@ -1375,21 +1449,35 @@ function FlowEditor() {
         <div style={styles.header}>
           <div>
             <div style={styles.eyebrow}>
-              CHATBOT CONFIGURATION
+              PRAX AI VOICE PLATFORM
             </div>
 
             <h1 style={styles.title}>
-              Flow Builder
+              Conversation Flow
             </h1>
 
             <p style={styles.subtitle}>
-              Design and manage the
-              conversation journey for{" "}
+              Design how your voice agent
+              moves through a spoken
+              conversation.
+            </p>
+
+            <div
+              style={styles.headerAgent}
+            >
+              <span
+                style={styles.liveDot}
+              />
+
+              <span>
+                Active Voice Agent:
+              </span>
+
               <strong>
                 {chatbot?.name ||
-                  "your chatbot"}
+                  "PRAX Voice Agent"}
               </strong>
-            </p>
+            </div>
           </div>
 
           <div
@@ -1418,7 +1506,7 @@ function FlowEditor() {
                 openCreateStage
               }
             >
-              + Add Stage
+              + Add Voice Stage
             </button>
           </div>
         </div>
@@ -1433,7 +1521,7 @@ function FlowEditor() {
                   background:
                     C.redBg,
                   border:
-                    "1px solid #fecaca",
+                    "1px solid rgba(248,113,113,.22)",
                   color: C.red,
                 }}
               >
@@ -1448,8 +1536,8 @@ function FlowEditor() {
                   background:
                     C.greenBg,
                   border:
-                    "1px solid #bbf7d0",
-                  color: C.green,
+                    "1px solid rgba(34,197,94,.22)",
+                  color: "#4ade80",
                 }}
               >
                 {message}
@@ -1464,95 +1552,39 @@ function FlowEditor() {
             styles.summaryGrid
           }
         >
-          <div style={styles.summary}>
-            <div
-              style={
-                styles.summaryLabel
-              }
-            >
-              TOTAL STAGES
-            </div>
+          <SummaryCard
+            label="VOICE STAGES"
+            value={stages.length}
+            hint="Conversation states"
+          />
 
-            <div
-              style={
-                styles.summaryValue
-              }
-            >
-              {stages.length}
-            </div>
-          </div>
+          <SummaryCard
+            label="ROUTING RULES"
+            value={transitions.length}
+            hint="Stage transitions"
+          />
 
-          <div style={styles.summary}>
-            <div
-              style={
-                styles.summaryLabel
-              }
-            >
-              TRANSITIONS
-            </div>
+          <SummaryCard
+            label="ENTRY STAGE"
+            value={
+              startStage?.name ||
+              "Not configured"
+            }
+            hint="Voice session entry point"
+          />
 
-            <div
-              style={
-                styles.summaryValue
-              }
-            >
-              {transitions.length}
-            </div>
-          </div>
-
-          <div style={styles.summary}>
-            <div
-              style={
-                styles.summaryLabel
-              }
-            >
-              START STAGE
-            </div>
-
-            <div
-              style={
-                styles.summaryValue
-              }
-            >
-              {startStage?.name ||
-                "Not configured"}
-            </div>
-          </div>
-
-          <div style={styles.summary}>
-            <div
-              style={
-                styles.summaryLabel
-              }
-            >
-              CHATBOT STATUS
-            </div>
-
-            <div
-              style={{
-                ...styles.summaryValue,
-                fontSize: "12px",
-                display:
-                  "inline-flex",
-                padding:
-                  "6px 10px",
-                borderRadius:
-                  "999px",
-                background:
-                  chatbot?.is_active
-                    ? C.greenBg
-                    : C.redBg,
-                color:
-                  chatbot?.is_active
-                    ? C.green
-                    : C.red,
-              }}
-            >
-              {chatbot?.is_active
-                ? "Active"
-                : "Inactive"}
-            </div>
-          </div>
+          <SummaryCard
+            label="AGENT STATUS"
+            value={
+              chatbot?.is_active
+                ? "ACTIVE"
+                : "INACTIVE"
+            }
+            hint="PRAX voice runtime"
+            green={
+              chatbot?.is_active
+            }
+          />
         </div>
 
         {/* VISUAL FLOW */}
@@ -1568,7 +1600,7 @@ function FlowEditor() {
                   styles.panelTitle
                 }
               >
-                Visual Conversation Flow
+                Voice Conversation Map
               </h2>
 
               <p
@@ -1576,9 +1608,9 @@ function FlowEditor() {
                   styles.panelText
                 }
               >
-                Follow the actual routing path
-                from the start stage through
-                conditional branches.
+                Visualize the spoken journey
+                from session start through
+                conditional routing.
               </p>
             </div>
 
@@ -1592,22 +1624,18 @@ function FlowEditor() {
                 openCreateTransition
               }
             >
-              + Add Transition
+              + Add Routing Rule
             </button>
           </div>
 
           {sortedStages.length === 0 ? (
-            <div
-              style={
-                styles.empty
-              }
-            >
+            <div style={styles.empty}>
               <div
                 style={
                   styles.emptyIcon
                 }
               >
-                ◎
+                ◇
               </div>
 
               <h3
@@ -1615,7 +1643,7 @@ function FlowEditor() {
                   styles.emptyTitle
                 }
               >
-                No stages configured
+                No voice stages configured
               </h3>
 
               <p
@@ -1623,9 +1651,10 @@ function FlowEditor() {
                   styles.emptyText
                 }
               >
-                Create the first conversation
-                stage to start building the
-                chatbot journey.
+                Create your first voice
+                conversation stage to define
+                how the agent should guide the
+                caller.
               </p>
 
               <button
@@ -1642,17 +1671,13 @@ function FlowEditor() {
               </button>
             </div>
           ) : !startStage ? (
-            <div
-              style={
-                styles.empty
-              }
-            >
+            <div style={styles.empty}>
               <div
                 style={
                   styles.emptyIcon
                 }
               >
-                ⚠
+                !
               </div>
 
               <h3
@@ -1660,7 +1685,7 @@ function FlowEditor() {
                   styles.emptyTitle
                 }
               >
-                Start stage not configured
+                Entry stage not configured
               </h3>
 
               <p
@@ -1668,19 +1693,20 @@ function FlowEditor() {
                   styles.emptyText
                 }
               >
-                Edit one stage and mark it as
-                the Start Stage to define the
-                conversation entry point.
+                Mark one voice stage as the
+                Start Stage to define where
+                every new voice conversation
+                begins.
               </p>
             </div>
           ) : (
             <div style={styles.canvas}>
               <div style={styles.flow}>
-                {/* START NODE */}
+                {/* START */}
                 <div
                   style={{
                     width: "100%",
-                    maxWidth: "410px",
+                    maxWidth: "430px",
                   }}
                 >
                   <StageNode
@@ -1702,7 +1728,7 @@ function FlowEditor() {
                   />
                 </div>
 
-                {/* CONNECTION FROM START */}
+                {/* CONNECTION */}
                 {startOutgoing.length >
                   0 && (
                   <>
@@ -1772,7 +1798,7 @@ function FlowEditor() {
                                 }
                               >
                                 {transition.condition ||
-                                  "ANY"}
+                                  "ANY RESPONSE"}
                               </div>
 
                               <div
@@ -1827,7 +1853,7 @@ function FlowEditor() {
                                   styles.targetInfo
                                 }
                               >
-                                Priority{" "}
+                                Routing priority{" "}
                                 {transition.priority ??
                                   0}
                               </div>
@@ -1839,7 +1865,7 @@ function FlowEditor() {
                   </>
                 )}
 
-                {/* UNCONNECTED / ADDITIONAL STAGES */}
+                {/* REMAINING */}
                 {remainingStages.length >
                   0 && (
                   <>
@@ -1867,12 +1893,10 @@ function FlowEditor() {
 
                     <div
                       style={{
-                        width:
-                          "100%",
+                        width: "100%",
                         maxWidth:
                           "980px",
-                        display:
-                          "grid",
+                        display: "grid",
                         gridTemplateColumns:
                           "repeat(3,minmax(0,1fr))",
                         gap: "16px",
@@ -1923,9 +1947,8 @@ function FlowEditor() {
                       styles.terminalBanner
                     }
                   >
-                    Terminal stages mark the
-                    end of the chatbot
-                    conversation.
+                    ● Terminal stages end the
+                    active voice conversation.
                   </div>
                 )}
               </div>
@@ -1933,7 +1956,46 @@ function FlowEditor() {
           )}
         </section>
 
-        {/* TRANSITION MANAGEMENT */}
+        {/* RUNTIME */}
+        <div
+          style={styles.runtimeBar}
+        >
+          <div>
+            <div
+              style={
+                styles.runtimeTitle
+              }
+            >
+              PRAX Voice Conversation Runtime
+            </div>
+
+            <div
+              style={
+                styles.runtimeText
+              }
+            >
+              Gemini-powered routing and
+              conversation state management
+            </div>
+          </div>
+
+          <div
+            style={
+              styles.runtimeStatus
+            }
+          >
+            <span
+              style={{
+                ...styles.liveDot,
+                width: "6px",
+                height: "6px",
+              }}
+            />
+            SYSTEM OPERATIONAL
+          </div>
+        </div>
+
+        {/* TRANSITIONS */}
         <section style={styles.panel}>
           <div
             style={
@@ -1946,7 +2008,7 @@ function FlowEditor() {
                   styles.panelTitle
                 }
               >
-                Stage Transitions
+                Voice Routing Rules
               </h2>
 
               <p
@@ -1954,27 +2016,23 @@ function FlowEditor() {
                   styles.panelText
                 }
               >
-                Manage routing conditions and
-                priority rules.
+                Control how the voice agent
+                moves between conversation
+                stages.
               </p>
             </div>
           </div>
 
           {transitions.length === 0 ? (
-            <div
-              style={
-                styles.empty
-              }
-            >
+            <div style={styles.empty}>
               <p
                 style={{
-                  color:
-                    C.muted,
-                  fontSize:
-                    "13px",
+                  color: C.muted,
+                  fontSize: "12px",
                 }}
               >
-                No transitions configured yet.
+                No routing rules configured
+                yet.
               </p>
             </div>
           ) : (
@@ -1984,10 +2042,10 @@ function FlowEditor() {
                   styles.transitionsHeader
                 }
               >
-                <span>FROM</span>
-                <span></span>
-                <span>TO</span>
-                <span>CONDITION</span>
+                <span>FROM STAGE</span>
+                <span />
+                <span>TO STAGE</span>
+                <span>VOICE CONDITION</span>
                 <span>PRIORITY</span>
                 <span>ACTIONS</span>
               </div>
@@ -2058,7 +2116,7 @@ function FlowEditor() {
                         style={{
                           ...styles.rowBtn,
                           border:
-                            `1px solid ${C.borderDark}`,
+                            `1px solid ${C.border}`,
                           color:
                             C.text2,
                         }}
@@ -2076,7 +2134,7 @@ function FlowEditor() {
                         style={{
                           ...styles.rowBtn,
                           border:
-                            "1px solid #fecaca",
+                            "1px solid rgba(248,113,113,.22)",
                           color:
                             C.red,
                         }}
@@ -2116,8 +2174,8 @@ function FlowEditor() {
                     }
                   >
                     {editingStage
-                      ? "Edit Conversation Stage"
-                      : "Create Conversation Stage"}
+                      ? "Edit Voice Stage"
+                      : "Create Voice Stage"}
                   </h2>
 
                   <p
@@ -2125,8 +2183,8 @@ function FlowEditor() {
                       styles.modalText
                     }
                   >
-                    Configure stage identity and
-                    conversation behavior.
+                    Define a conversational state
+                    for the voice agent.
                   </p>
                 </div>
 
@@ -2167,7 +2225,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        Stage Name
+                        Voice Stage Name
                       </label>
 
                       <input
@@ -2181,7 +2239,7 @@ function FlowEditor() {
                         onChange={
                           handleStageChange
                         }
-                        placeholder="e.g. Qualification"
+                        placeholder="e.g. Collect Customer Details"
                         required
                       />
                     </div>
@@ -2197,7 +2255,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        Stage Description
+                        Stage Behavior
                       </label>
 
                       <textarea
@@ -2217,7 +2275,7 @@ function FlowEditor() {
                         onChange={
                           handleStageChange
                         }
-                        placeholder="Describe the purpose of this stage..."
+                        placeholder="Describe what the voice agent should accomplish in this stage..."
                         rows={4}
                       />
                     </div>
@@ -2255,8 +2313,8 @@ function FlowEditor() {
                           styles.formHint
                         }
                       >
-                        Controls the stage
-                        ordering.
+                        Controls display and
+                        execution ordering.
                       </span>
                     </div>
 
@@ -2304,7 +2362,7 @@ function FlowEditor() {
                                 styles.checkTitle
                               }
                             >
-                              Start Stage
+                              Voice Entry Stage
                             </span>
 
                             <span
@@ -2312,9 +2370,8 @@ function FlowEditor() {
                                 styles.checkHint
                               }
                             >
-                              Entry point
-                              for new
-                              conversations.
+                              Starting point for
+                              new voice sessions.
                             </span>
                           </span>
                         </label>
@@ -2345,7 +2402,7 @@ function FlowEditor() {
                                 styles.checkTitle
                               }
                             >
-                              Terminal Stage
+                              End Conversation
                             </span>
 
                             <span
@@ -2353,8 +2410,8 @@ function FlowEditor() {
                                 styles.checkHint
                               }
                             >
-                              Ends the
-                              conversation.
+                              Ends the active
+                              voice interaction.
                             </span>
                           </span>
                         </label>
@@ -2393,7 +2450,7 @@ function FlowEditor() {
                         ? "Saving..."
                         : editingStage
                         ? "Save Changes"
-                        : "Create Stage"}
+                        : "Create Voice Stage"}
                     </button>
                   </div>
                 </form>
@@ -2422,8 +2479,8 @@ function FlowEditor() {
                     }
                   >
                     {editingTransition
-                      ? "Edit Stage Transition"
-                      : "Create Stage Transition"}
+                      ? "Edit Voice Routing Rule"
+                      : "Create Voice Routing Rule"}
                   </h2>
 
                   <p
@@ -2431,8 +2488,8 @@ function FlowEditor() {
                       styles.modalText
                     }
                   >
-                    Define how the chatbot moves
-                    from one stage to another.
+                    Define when the voice agent
+                    should move between stages.
                   </p>
                 </div>
 
@@ -2474,7 +2531,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        From Stage
+                        From Voice Stage
                       </label>
 
                       <select
@@ -2521,7 +2578,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        To Stage
+                        To Voice Stage
                       </label>
 
                       <select
@@ -2569,7 +2626,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        Matching Condition
+                        Spoken Response Condition
                       </label>
 
                       <input
@@ -2591,8 +2648,9 @@ function FlowEditor() {
                           styles.formHint
                         }
                       >
-                        Leave empty for an
-                        unconditional transition.
+                        The condition used by the
+                        PRAX runtime to route the
+                        conversation.
                       </span>
                     </div>
 
@@ -2606,7 +2664,7 @@ function FlowEditor() {
                           styles.formLabel
                         }
                       >
-                        Priority
+                        Routing Priority
                       </label>
 
                       <input
@@ -2667,7 +2725,7 @@ function FlowEditor() {
                         ? "Saving..."
                         : editingTransition
                         ? "Save Changes"
-                        : "Create Transition"}
+                        : "Create Routing Rule"}
                     </button>
                   </div>
                 </form>
@@ -2675,6 +2733,50 @@ function FlowEditor() {
             </div>
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function SummaryCard({
+  label,
+  value,
+  hint,
+  green = false,
+}) {
+  return (
+    <div style={styles.summary}>
+      <div
+        style={styles.summaryAccent}
+      />
+
+      <div
+        style={styles.summaryLabel}
+      >
+        {label}
+      </div>
+
+      <div
+        style={{
+          ...styles.summaryValue,
+          color: green
+            ? "#4ade80"
+            : C.text,
+          fontSize:
+            typeof value === "string" &&
+            value.length > 14
+              ? "13px"
+              : styles.summaryValue
+                  .fontSize,
+        }}
+      >
+        {value}
+      </div>
+
+      <div
+        style={styles.summaryHint}
+      >
+        {hint}
       </div>
     </div>
   );
@@ -2691,7 +2793,7 @@ function StageNode({
     ? styles.nodeStart
     : stage.is_terminal
     ? styles.nodeTerminal
-    : styles.nodeNormal;
+    : {};
 
   const numberStyle = stage.is_start
     ? styles.numberStart
@@ -2722,9 +2824,19 @@ function StageNode({
               minWidth: 0,
             }}
           >
-            <h3 style={styles.nodeName}>
+            <h3
+              style={styles.nodeName}
+            >
               {stage.name}
             </h3>
+
+            <div
+              style={
+                styles.nodeType
+              }
+            >
+              VOICE CONVERSATION STATE
+            </div>
           </div>
         </div>
 
@@ -2755,7 +2867,7 @@ function StageNode({
 
       <p style={styles.description}>
         {stage.description ||
-          "No stage description provided."}
+          "No stage behavior description provided."}
       </p>
 
       <div style={styles.meta}>
@@ -2763,14 +2875,13 @@ function StageNode({
           <span
             style={styles.metaLabel}
           >
-            Order
+            Stage Order
           </span>
 
           <span
             style={styles.metaValue}
           >
-            {stage.stage_order ??
-              0}
+            {stage.stage_order ?? 0}
           </span>
         </div>
 
@@ -2778,7 +2889,7 @@ function StageNode({
           <span
             style={styles.metaLabel}
           >
-            Outgoing
+            Outgoing Routes
           </span>
 
           <span
@@ -2795,8 +2906,7 @@ function StageNode({
           style={{
             ...styles.nodeBtn,
             border:
-              `1px solid ${C.borderDark}`,
-            color: C.text2,
+              `1px solid ${C.border}`,
           }}
           onClick={() =>
             onEdit(stage)
@@ -2810,7 +2920,7 @@ function StageNode({
           style={{
             ...styles.nodeBtn,
             border:
-              "1px solid #fecaca",
+              "1px solid rgba(248,113,113,.22)",
             color: C.red,
           }}
           onClick={() =>
