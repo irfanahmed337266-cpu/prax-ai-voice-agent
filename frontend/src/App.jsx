@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { NavLink, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
@@ -110,7 +110,7 @@ function Dashboard() {
         </div>
 
         <NavLink
-          to="/preview"
+          to={withChatbot("/preview")}
           className="voice-primary-button"
         >
           <span className="voice-button-icon">🎙️</span>

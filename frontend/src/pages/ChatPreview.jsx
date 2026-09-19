@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import api from "../services/api";
 
@@ -49,10 +49,6 @@ export default function ChatPreview() {
 
   const audioUrlRef =
     useRef(null);
-
-  // =====================================================
-  // LOAD CHATBOTS
-  // =====================================================
 
   useEffect(() => {
     let cancelled = false;
@@ -116,10 +112,6 @@ export default function ChatPreview() {
     setSearchParams,
   ]);
 
-  // =====================================================
-  // CREATE CONVERSATION
-  // =====================================================
-
   useEffect(() => {
     let cancelled = false;
 
@@ -173,10 +165,6 @@ export default function ChatPreview() {
     };
   }, [selectedChatbotId]);
 
-  // =====================================================
-  // CLEANUP
-  // =====================================================
-
   useEffect(() => {
     return () => {
       if (
@@ -197,13 +185,7 @@ export default function ChatPreview() {
     };
   }, []);
 
-  // =====================================================
-  // CHATBOT CHANGE
-  // =====================================================
-
-  function handleChatbotChange(
-    event
-  ) {
+  function handleChatbotChange(event) {
     const chatbotId =
       event.target.value;
 
@@ -218,10 +200,6 @@ export default function ChatPreview() {
     setError("");
     setVoiceState("ready");
   }
-
-  // =====================================================
-  // TEXT CHAT
-  // =====================================================
 
   async function sendMessage(event) {
     event.preventDefault();
@@ -242,6 +220,7 @@ export default function ChatPreview() {
       {
         role: "user",
         content: userMessage,
+        source: "text",
       },
     ]);
 
@@ -270,6 +249,7 @@ export default function ChatPreview() {
           role: "assistant",
           content:
             response.data.response,
+          source: "text",
         },
       ]);
     } catch (err) {
@@ -282,10 +262,6 @@ export default function ChatPreview() {
       setVoiceState("ready");
     }
   }
-
-  // =====================================================
-  // START RECORDING
-  // =====================================================
 
   async function startRecording() {
     if (
@@ -483,10 +459,6 @@ export default function ChatPreview() {
     }
   }
 
-  // =====================================================
-  // STOP RECORDING
-  // =====================================================
-
   function stopRecording() {
     const recorder =
       mediaRecorderRef.current;
@@ -504,10 +476,6 @@ export default function ChatPreview() {
     recorder.stop();
     setRecording(false);
   }
-
-  // =====================================================
-  // VOICE API
-  // =====================================================
 
   async function sendVoiceMessage(
     audioBlob
@@ -647,10 +615,6 @@ export default function ChatPreview() {
     }
   }
 
-  // =====================================================
-  // DATA
-  // =====================================================
-
   const selectedChatbot =
     chatbots.find(
       (chatbot) =>
@@ -697,44 +661,57 @@ export default function ChatPreview() {
     return "Ready";
   })();
 
-  const lastAssistantMessage =
-    [...messages]
-      .reverse()
-      .find(
-        (message) =>
-          message.role ===
-          "assistant"
-      );
+  const statusDescription = (() => {
+    if (recording) {
+      return "Listening to your voice input";
+    }
 
-  const lastUserMessage =
-    [...messages]
-      .reverse()
-      .find(
-        (message) =>
-          message.role === "user"
-      );
+    if (voiceState === "processing") {
+      return "Gemini is processing your request";
+    }
 
-  // =====================================================
-  // UI
-  // =====================================================
+    if (voiceState === "speaking") {
+      return "Voice response is playing";
+    }
+
+    if (initializing) {
+      return "Preparing your voice session";
+    }
+
+    return "Ready to receive your message";
+  })();
 
   return (
     <div className="voice-playground">
-      {/* HEADER */}
       <div className="voice-playground-header">
-        <div className="voice-playground-title-row">
-          <div>
-            <h1>
-              Voice Playground
-            </h1>
+        <div>
+          <div className="voice-header-eyebrow">
+            PRAX VOICE RUNTIME
+          </div>
 
-            <p>
-              Talk naturally with your AI voice agent.
-            </p>
+          <h1>
+            Voice Playground
+          </h1>
+
+          <p>
+            Test your AI voice agent with
+            natural spoken conversations.
+          </p>
+        </div>
+
+        <div className="voice-header-status">
+          <span className="status-dot" />
+          <div>
+            <strong>
+              Voice system operational
+            </strong>
+
+            <small>
+              Gemini voice runtime
+            </small>
           </div>
         </div>
       </div>
-{/* TOP CONTROL BAR */}
 
       <div className="voice-control-bar">
         <div className="voice-agent-picker">
@@ -743,9 +720,7 @@ export default function ChatPreview() {
           </span>
 
           <select
-            value={
-              selectedChatbotId
-            }
+            value={selectedChatbotId}
             onChange={
               handleChatbotChange
             }
@@ -807,6 +782,7 @@ export default function ChatPreview() {
 
           <div className="voice-meta-item">
             <span>STATUS</span>
+
             <strong className="status-ready">
               <span className="status-dot" />
               {statusText}
@@ -817,21 +793,21 @@ export default function ChatPreview() {
 
       {error && (
         <div className="voice-error">
-          <span>!</span>
+          <div className="voice-error-icon">
+            !
+          </div>
+
           <div>
             <strong>
               Voice Agent Error
             </strong>
+
             <p>{error}</p>
           </div>
         </div>
       )}
 
-      {/* MAIN VOICE AREA */}
-
-      <div className="voice-playground-grid">
-        {/* LEFT â€” VOICE CONTROL */}
-
+      <div className="voice-session-layout">
         <section className="voice-interaction-panel">
           <div className="interaction-heading">
             <div>
@@ -842,6 +818,10 @@ export default function ChatPreview() {
               <h2>
                 {selectedName}
               </h2>
+
+              <p className="session-subtitle">
+                {statusDescription}
+              </p>
             </div>
 
             <div className="session-badge">
@@ -867,6 +847,8 @@ export default function ChatPreview() {
                 : ""
             }`}
           >
+            <div className="voice-orb-glow" />
+
             <div className="voice-orb-ring ring-one" />
             <div className="voice-orb-ring ring-two" />
             <div className="voice-orb-ring ring-three" />
@@ -893,26 +875,47 @@ export default function ChatPreview() {
               }
             >
               <div className="voice-main-icon">
-                {recording
-                  ? "â– "
-                  : (
-                      <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="9" y="2" width="6" height="12" rx="3" />
-                        <path d="M5 10a7 7 0 0 0 14 0" />
-                        <line x1="12" y1="19" x2="12" y2="22" />
-                        <line x1="8" y1="22" x2="16" y2="22" />
-                      </svg>
-                    )}
+                {recording ? (
+                  <span className="record-stop">
+                    ■
+                  </span>
+                ) : (
+                  <svg
+                    width="30"
+                    height="30"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <rect
+                      x="9"
+                      y="2"
+                      width="6"
+                      height="12"
+                      rx="3"
+                    />
+
+                    <path d="M5 10a7 7 0 0 0 14 0" />
+
+                    <line
+                      x1="12"
+                      y1="19"
+                      x2="12"
+                      y2="22"
+                    />
+
+                    <line
+                      x1="8"
+                      y1="22"
+                      x2="16"
+                      y2="22"
+                    />
+                  </svg>
+                )}
               </div>
             </button>
 
@@ -936,25 +939,25 @@ export default function ChatPreview() {
 
             <p>
               {recording
-                ? "Speak naturally, then press stop when you're finished."
+                ? "Speak naturally, then press the button again when you are finished."
                 : voiceState ===
                     "processing"
-                  ? "Gemini is processing your message."
+                  ? "Your AI voice agent is processing the conversation."
                   : voiceState ===
                       "speaking"
                     ? "Your AI voice agent is responding."
-                    : "Press the microphone and start speaking."}
+                    : "Press the microphone to start speaking."}
             </p>
           </div>
 
           <div className="voice-capability-row">
             <div className="voice-capability">
-              <span>â—‰</span>
+              <span>◉</span>
               Speech Recognition
             </div>
 
             <div className="voice-capability">
-              <span>âœ¦</span>
+              <span>✦</span>
               Gemini AI
             </div>
 
@@ -964,8 +967,6 @@ export default function ChatPreview() {
             </div>
           </div>
         </section>
-
-        {/* RIGHT â€” LIVE TRANSCRIPT */}
 
         <section className="voice-transcript-panel">
           <div className="transcript-header">
@@ -977,11 +978,18 @@ export default function ChatPreview() {
               <h2>
                 Live Transcript
               </h2>
+
+              <p>
+                Real-time conversation history
+              </p>
             </div>
 
-            <span className="turn-count">
-              {messages.length} turns
-            </span>
+            <div className="turn-count">
+              {messages.length}{" "}
+              {messages.length === 1
+                ? "turn"
+                : "turns"}
+            </div>
           </div>
 
           <div className="transcript-content">
@@ -989,19 +997,29 @@ export default function ChatPreview() {
               !initializing && (
                 <div className="transcript-empty">
                   <div className="empty-icon">
-                    ◌
+                    <svg
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                    >
+                      <path d="M12 18a6 6 0 0 0 6-6V8a6 6 0 0 0-12 0v4a6 6 0 0 0 6 6Z" />
+                      <path d="M19 11a7 7 0 0 1-14 0" />
+                      <path d="M12 18v3" />
+                      <path d="M8 21h8" />
+                    </svg>
                   </div>
 
                   <h3>
-                    Your conversation
-                    starts here
+                    Start a conversation
                   </h3>
 
                   <p>
-                    Speak into the
-                    microphone and your
-                    transcript will appear
-                    here.
+                    Press the microphone and
+                    speak naturally. Your
+                    transcript will appear here.
                   </p>
                 </div>
               )}
@@ -1009,7 +1027,9 @@ export default function ChatPreview() {
             {initializing && (
               <div className="transcript-empty">
                 <div className="empty-spinner">
-                  ...
+                  <span />
+                  <span />
+                  <span />
                 </div>
 
                 <h3>
@@ -1017,8 +1037,8 @@ export default function ChatPreview() {
                 </h3>
 
                 <p>
-                  Connecting to your
-                  voice agent.
+                  Connecting to your voice
+                  agent.
                 </p>
               </div>
             )}
@@ -1026,7 +1046,7 @@ export default function ChatPreview() {
             {messages.map(
               (message, index) => (
                 <div
-                  key={index}
+                  key={`${message.role}-${index}`}
                   className={`transcript-message ${
                     message.role ===
                     "user"
@@ -1042,11 +1062,22 @@ export default function ChatPreview() {
                   </div>
 
                   <div className="message-body">
-                    <div className="message-label">
-                      {message.role ===
-                      "user"
-                        ? "You"
-                        : selectedName}
+                    <div className="message-topline">
+                      <div className="message-label">
+                        {message.role ===
+                        "user"
+                          ? "You"
+                          : selectedName}
+                      </div>
+
+                      {message.source && (
+                        <span className="message-source">
+                          {message.source ===
+                          "voice"
+                            ? "VOICE"
+                            : "TEXT"}
+                        </span>
+                      )}
                     </div>
 
                     <div className="message-text">
@@ -1084,24 +1115,35 @@ export default function ChatPreview() {
             </span>
 
             <p>
-              {lastAssistantMessage
-                ?.content ||
-                "Your AI response will appear here after your first message."}
+              {messages.length
+                ? [...messages]
+                    .reverse()
+                    .find(
+                      (message) =>
+                        message.role ===
+                        "assistant"
+                    )?.content ||
+                  "Waiting for the next response."
+                : "Your AI response will appear here after your first message."}
             </p>
           </div>
         </section>
       </div>
 
-      {/* TEXT FALLBACK */}
-
       <section className="voice-text-input-panel">
         <div className="text-input-label">
-          <span className="eyebrow">
-            TEXT FALLBACK
-          </span>
+          <div>
+            <span className="eyebrow">
+              TEXT FALLBACK
+            </span>
+
+            <strong>
+              Continue by typing
+            </strong>
+          </div>
 
           <span>
-            You can also type a message
+            Use text when voice is unavailable.
           </span>
         </div>
 
@@ -1119,7 +1161,7 @@ export default function ChatPreview() {
             placeholder={
               initializing
                 ? "Initializing voice session..."
-                : "Type a message instead of speaking..."
+                : "Type your message here..."
             }
             disabled={
               !canInteract ||
@@ -1141,16 +1183,19 @@ export default function ChatPreview() {
         </form>
       </section>
 
-      {/* FOOTER INFO */}
-
       <div className="voice-playground-footer">
         <div>
           <span className="footer-live-dot" />
-          Voice system operational
+          <span>
+            Voice system operational
+          </span>
         </div>
 
         <div>
-          Conversation ID:
+          <span>
+            Conversation ID
+          </span>
+
           <strong>
             {conversationId
               ? `${conversationId.slice(
@@ -1162,7 +1207,10 @@ export default function ChatPreview() {
         </div>
 
         <div>
-          Auto language detection
+          <span>
+            Auto language detection
+          </span>
+
           <strong>
             Enabled
           </strong>
