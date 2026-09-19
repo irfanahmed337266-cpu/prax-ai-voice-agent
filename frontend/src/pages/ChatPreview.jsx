@@ -721,34 +721,20 @@ export default function ChatPreview() {
   return (
     <div className="voice-playground">
       {/* HEADER */}
-
       <div className="voice-playground-header">
-        <div>
-          <div className="voice-breadcrumb">
-            PRAX <span>/</span> AI Voice Agent
+        <div className="voice-playground-title-row">
+          <div>
+            <h1>
+              Voice Playground
+            </h1>
+
+            <p>
+              Talk naturally with your AI voice agent.
+            </p>
           </div>
-
-          <div className="voice-playground-title-row">
-            <div>
-              <h1>
-                Voice Playground
-              </h1>
-
-              <p>
-                Talk naturally with your
-                AI voice agent.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="voice-playground-status">
-          <span className="status-dot" />
-          Gemini Connected
         </div>
       </div>
-
-      {/* TOP CONTROL BAR */}
+{/* TOP CONTROL BAR */}
 
       <div className="voice-control-bar">
         <div className="voice-agent-picker">
@@ -844,7 +830,7 @@ export default function ChatPreview() {
       {/* MAIN VOICE AREA */}
 
       <div className="voice-playground-grid">
-        {/* LEFT — VOICE CONTROL */}
+        {/* LEFT â€” VOICE CONTROL */}
 
         <section className="voice-interaction-panel">
           <div className="interaction-heading">
@@ -908,8 +894,25 @@ export default function ChatPreview() {
             >
               <div className="voice-main-icon">
                 {recording
-                  ? "■"
-                  : "🎙"}
+                  ? "â– "
+                  : (
+                      <svg
+                        width="28"
+                        height="28"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="9" y="2" width="6" height="12" rx="3" />
+                        <path d="M5 10a7 7 0 0 0 14 0" />
+                        <line x1="12" y1="19" x2="12" y2="22" />
+                        <line x1="8" y1="22" x2="16" y2="22" />
+                      </svg>
+                    )}
               </div>
             </button>
 
@@ -946,12 +949,12 @@ export default function ChatPreview() {
 
           <div className="voice-capability-row">
             <div className="voice-capability">
-              <span>◉</span>
+              <span>â—‰</span>
               Speech Recognition
             </div>
 
             <div className="voice-capability">
-              <span>✦</span>
+              <span>âœ¦</span>
               Gemini AI
             </div>
 
@@ -962,7 +965,7 @@ export default function ChatPreview() {
           </div>
         </section>
 
-        {/* RIGHT — LIVE TRANSCRIPT */}
+        {/* RIGHT â€” LIVE TRANSCRIPT */}
 
         <section className="voice-transcript-panel">
           <div className="transcript-header">

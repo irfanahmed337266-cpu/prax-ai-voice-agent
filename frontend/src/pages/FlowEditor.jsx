@@ -95,8 +95,9 @@ const styles = {
     color: C.muted,
   },
 
+  titleRow: { display: "flex", alignItems: "center", gap: "18px", flexWrap: "wrap", },
+
   headerAgent: {
-    marginTop: "13px",
     display: "inline-flex",
     alignItems: "center",
     gap: "8px",
@@ -1267,7 +1268,7 @@ function FlowEditor() {
       setError(
         `This transition already exists: ${getStageName(
           transitionForm.from_stage_id
-        )} → ${getStageName(
+        )} â†’ ${getStageName(
           transitionForm.to_stage_id
         )}`
       );
@@ -1385,7 +1386,7 @@ function FlowEditor() {
         <div style={styles.shell}>
           <div style={styles.empty}>
             <div style={styles.emptyIcon}>
-              ◌
+              â—Œ
             </div>
 
             <h3 style={styles.emptyTitle}>
@@ -1452,32 +1453,13 @@ function FlowEditor() {
               PRAX AI VOICE PLATFORM
             </div>
 
-            <h1 style={styles.title}>
-              Conversation Flow
-            </h1>
-
-            <p style={styles.subtitle}>
+            <div style={styles.titleRow}><h1 style={styles.title}>Conversation Flow</h1><div style={styles.headerAgent}><span style={styles.liveDot} /><span>Active Voice Agent:</span><strong>{chatbot?.name || "PRAX Voice Agent"}</strong></div></div><p style={styles.subtitle}>
               Design how your voice agent
               moves through a spoken
               conversation.
             </p>
 
-            <div
-              style={styles.headerAgent}
-            >
-              <span
-                style={styles.liveDot}
-              />
 
-              <span>
-                Active Voice Agent:
-              </span>
-
-              <strong>
-                {chatbot?.name ||
-                  "PRAX Voice Agent"}
-              </strong>
-            </div>
           </div>
 
           <div
@@ -1493,7 +1475,7 @@ function FlowEditor() {
               }}
               onClick={loadData}
             >
-              ↻ Refresh
+              â†» Refresh
             </button>
 
             <button
@@ -1635,7 +1617,7 @@ function FlowEditor() {
                   styles.emptyIcon
                 }
               >
-                ◇
+                â—‡
               </div>
 
               <h3
@@ -1748,7 +1730,7 @@ function FlowEditor() {
                           styles.arrow
                         }
                       >
-                        ↓
+                        â†“
                       </div>
                     </div>
 
@@ -1817,7 +1799,7 @@ function FlowEditor() {
                                     styles.branchArrow
                                   }
                                 >
-                                  ↓
+                                  â†“
                                 </div>
                               </div>
 
@@ -1887,7 +1869,7 @@ function FlowEditor() {
                           styles.arrow
                         }
                       >
-                        ↓
+                        â†“
                       </div>
                     </div>
 
@@ -1947,7 +1929,7 @@ function FlowEditor() {
                       styles.terminalBanner
                     }
                   >
-                    ● Terminal stages end the
+                    â— Terminal stages end the
                     active voice conversation.
                   </div>
                 )}
@@ -2075,7 +2057,7 @@ function FlowEditor() {
                         styles.transitionArrow
                       }
                     >
-                      →
+                      â†’
                     </div>
 
                     <div
@@ -2197,7 +2179,7 @@ function FlowEditor() {
                     closeStageModal
                   }
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
 
@@ -2502,7 +2484,7 @@ function FlowEditor() {
                     closeTransitionModal
                   }
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
 

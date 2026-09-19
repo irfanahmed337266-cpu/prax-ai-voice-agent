@@ -1,4 +1,5 @@
-﻿import { NavLink, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 
 import Chatbots from "./pages/Chatbots";
@@ -20,7 +21,6 @@ import Deploy from "./pages/Deploy";
 
 const ACTIVE_CHATBOT_ID =
   "74b2abcd-021d-4c97-acf7-5dfed0f21663";
-
 
 const withChatbot = (path) =>
   `${path}?chatbotId=${ACTIVE_CHATBOT_ID}`;
@@ -68,28 +68,28 @@ function Dashboard() {
       language: "Urdu",
       time: "2 min ago",
       status: "Completed",
-      icon: "م",
+      icon: "🎧",
     },
     {
       name: "Order Inquiry",
       language: "English",
       time: "8 min ago",
       status: "Completed",
-      icon: "EN",
+      icon: "📦",
     },
     {
       name: "Order Status",
       language: "Urdu + English",
       time: "14 min ago",
       status: "Completed",
-      icon: "م",
+      icon: "🚚",
     },
     {
       name: "General Support",
       language: "English",
       time: "21 min ago",
       status: "Completed",
-      icon: "EN",
+      icon: "💬",
     },
   ];
 
@@ -97,7 +97,6 @@ function Dashboard() {
     <div className="voice-dashboard">
 
       <div className="voice-dashboard-header">
-
         <div>
           <div className="voice-eyebrow">
             VOICE CONTROL CENTER
@@ -117,7 +116,6 @@ function Dashboard() {
           <span className="voice-button-icon">🎙️</span>
           Test Voice Agent
         </NavLink>
-
       </div>
 
 
@@ -147,12 +145,10 @@ function Dashboard() {
             </p>
 
             <div className="voice-agent-tags">
-
               <span>🎤 Voice Enabled</span>
               <span>🇵🇰 Urdu</span>
               <span>🇬🇧 English</span>
               <span>⚡ Gemini</span>
-
             </div>
 
           </div>
@@ -230,13 +226,11 @@ function Dashboard() {
           <div className="voice-panel-header">
 
             <div>
-
               <h2>Recent Conversations</h2>
 
               <p>
                 Latest voice interactions with your agent.
               </p>
-
             </div>
 
             <NavLink
@@ -296,13 +290,11 @@ function Dashboard() {
           <div className="voice-panel-header">
 
             <div>
-
               <h2>Voice Capabilities</h2>
 
               <p>
                 Current agent configuration.
               </p>
-
             </div>
 
           </div>
@@ -393,13 +385,11 @@ function Dashboard() {
         <div className="voice-panel-header">
 
           <div>
-
             <h2>Voice Agent Setup</h2>
 
             <p>
               Configure the components behind your voice assistant.
             </p>
-
           </div>
 
         </div>
@@ -504,7 +494,6 @@ function Dashboard() {
           </div>
 
           <div>
-
             <strong>
               Voice system operational
             </strong>
@@ -512,7 +501,6 @@ function Dashboard() {
             <span>
               Gemini STT · PRAX AI Runtime · Gemini TTS
             </span>
-
           </div>
 
         </div>
@@ -537,10 +525,12 @@ function VoiceNavLink({
   icon,
   children,
   count,
+  onNavigate,
 }) {
   return (
     <NavLink
       to={to}
+      onClick={onNavigate}
       className={({ isActive }) =>
         isActive
           ? "voice-nav-link active"
@@ -571,11 +561,50 @@ function VoiceNavLink({
 
 function AppLayout() {
 
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
 
     <div className="voice-app">
 
-      <aside className="voice-sidebar">
+      {mobileMenuOpen && (
+        <button
+          type="button"
+          className="voice-mobile-overlay"
+          aria-label="Close navigation"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+
+      <aside
+        className={
+          mobileMenuOpen
+            ? "voice-sidebar mobile-open"
+            : "voice-sidebar"
+        }
+      >
+
+        <div className="voice-mobile-sidebar-header">
+
+          <span>PRAX</span>
+
+          <button
+            type="button"
+            className="voice-mobile-close"
+            aria-label="Close menu"
+            onClick={closeMobileMenu}
+          >
+            ×
+          </button>
+
+        </div>
+
 
         <div className="voice-brand">
 
@@ -634,6 +663,7 @@ function AppLayout() {
             <VoiceNavLink
               to="/dashboard"
               icon="◉"
+              onNavigate={closeMobileMenu}
             >
               Voice Dashboard
             </VoiceNavLink>
@@ -642,6 +672,7 @@ function AppLayout() {
               to="/chatbots"
               icon="◎"
               count="1"
+              onNavigate={closeMobileMenu}
             >
               Voice Agents
             </VoiceNavLink>
@@ -649,6 +680,7 @@ function AppLayout() {
             <VoiceNavLink
               to="/preview"
               icon="🎙️"
+              onNavigate={closeMobileMenu}
             >
               Voice Playground
             </VoiceNavLink>
@@ -656,6 +688,7 @@ function AppLayout() {
             <VoiceNavLink
               to="/preview"
               icon="◌"
+              onNavigate={closeMobileMenu}
             >
               Conversations
             </VoiceNavLink>
@@ -676,6 +709,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/knowledge")}
               icon="🧠"
+              onNavigate={closeMobileMenu}
             >
               Knowledge Base
             </VoiceNavLink>
@@ -683,6 +717,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/flow")}
               icon="⌘"
+              onNavigate={closeMobileMenu}
             >
               Conversation Flow
             </VoiceNavLink>
@@ -690,6 +725,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/ai-provider")}
               icon="⚡"
+              onNavigate={closeMobileMenu}
             >
               AI Provider
             </VoiceNavLink>
@@ -697,6 +733,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/branding")}
               icon="✦"
+              onNavigate={closeMobileMenu}
             >
               Voice Branding
             </VoiceNavLink>
@@ -704,6 +741,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/handoff")}
               icon="♙"
+              onNavigate={closeMobileMenu}
             >
               Human Handoff
             </VoiceNavLink>
@@ -724,6 +762,7 @@ function AppLayout() {
             <VoiceNavLink
               to={withChatbot("/deploy")}
               icon="↗"
+              onNavigate={closeMobileMenu}
             >
               Deploy Voice Agent
             </VoiceNavLink>
@@ -786,6 +825,19 @@ function AppLayout() {
       <main className="voice-main-content">
 
         <header className="voice-topbar">
+
+          <button
+            type="button"
+            className="voice-mobile-menu-button"
+            aria-label="Open navigation"
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+
 
           <div className="voice-breadcrumb">
 

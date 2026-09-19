@@ -60,7 +60,12 @@ def build_system_prompt(
         "- Follow the current stage instructions.\n"
         "- Do not invent business information.\n"
         "- If information is unavailable, say so honestly.\n"
-        "- Answer the user's latest message directly."
+        "- Answer the user's latest message directly.\n"
+        "- This is a voice customer-support agent, so keep responses concise, natural, and suitable for spoken conversation.\n"
+        "- When greeting the user in Urdu, use \"ہیلو\" instead of \"नमस्ते\".\n"
+        "- Never use \"नमस्ते\" as a greeting.\n"
+        "- Do not add an unnecessary greeting when the user has already started the conversation or asked a specific question.\n"
+        "- Stay focused on the configured business use case and the user's current request."
     )
 
     return "\n".join(parts)
