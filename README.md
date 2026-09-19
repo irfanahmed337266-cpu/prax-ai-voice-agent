@@ -10,32 +10,32 @@ Professional AI voice agent platform with real-time voice interaction, AI respon
 
 ## Features
 
-- AI voice conversations
-- Speech recognition
-- AI-generated voice responses
-- Text fallback
-- Agent selection
-- Conversation transcript
-- Knowledge base
-- AI provider configuration
-- Human handoff
-- Voice branding
-- Deployment-ready architecture
+* AI voice conversations
+* Speech recognition
+* AI-generated voice responses
+* Text fallback
+* Agent selection
+* Conversation transcript
+* Knowledge base
+* AI provider configuration
+* Human handoff
+* Voice branding
+* Deployment-ready architecture
 
 ## Tech Stack
 
-- React
-- Vite
-- FastAPI
-- Python
-- LangGraph
-- Gemini
-- Supabase
-- Vercel
-- FastAPI Cloud
+* React
+* Vite
+* FastAPI
+* Python
+* LangGraph
+* Gemini
+* Supabase
+* Vercel
+* FastAPI Cloud
 
 ## Architecture
 
-- rontend/ — React/Vite frontend
-- ackend/ — FastAPI backend
-- docs/ — Project documentation and preview images
+* `frontend/` — React/Vite frontend
+* `backend/` — FastAPI backend
+* `docs/` — Project documentation and preview images
